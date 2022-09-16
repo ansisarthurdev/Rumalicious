@@ -1,25 +1,136 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import styled from 'styled-components'
+
+//router
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+//redux
+import { Provider } from 'react-redux'
+import { store } from './app/store'
+
+//pages
+import HomeFeed from './pages/HomeFeed'
+import Browse from './pages/Browse'
+import Saved from './pages/Saved'
+
+//components
+import SideBar from './components/SideBar'
+import Footer from './components/Footer'
+import Hamburger from 'hamburger-react'
+
+//icons
+import { Home } from '@styled-icons/heroicons-outline/Home'
+import { SearchAlt } from '@styled-icons/boxicons-regular/SearchAlt'
+import { Heart } from '@styled-icons/fa-regular/Heart'
 
 function App() {
+
+  const [isOpen, setOpen] = useState(false)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+    <BrowserRouter>
+      <MobileMenu>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 15px'}}>
+        <h3>Rumalicious</h3>
+        <Hamburger toggled={isOpen} toggle={setOpen} />
+        </div>
+      </MobileMenu>
+
+      {isOpen && 
+      <MobileMenuContent>
+        <a href='/'><Home className='icon' /><p>Home</p></a>
+        <a href='/browse'><SearchAlt className='icon' /><p>Browse</p></a>
+        <a href='/saved'><Heart className='icon' /><p>Saved</p></a>
+      </MobileMenuContent>}
+
+      <Wrapper>
+        <SideBar />
+        <Content>
+          <Routes>
+            <Route path="/" element={<HomeFeed />} />
+            <Route path="/browse" element={<Browse />} />
+            <Route path="/saved" element={<Saved />} />
+          </Routes>
+        </Content>
+      </Wrapper>
+
+      <Footer />
+    </BrowserRouter>
+    </Provider>
   );
 }
+
+const MobileMenuContent = styled.div`
+
+    padding: 10px;
+    position: sticky;
+    top: 48px;
+    background: white!important;
+    z-index: 100;
+
+    a {
+      display: flex;
+      align-items: center;
+      color: black;
+      text-decoration: none;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 30px;
+      transition: .2s ease-out;
+      font-size: .9rem;
+
+      :hover {
+        background: #111101;
+        color: white;
+      }
+
+      .icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 5px;
+      }
+    }
+`
+
+const MobileMenu = styled.div`
+position: sticky;
+top: 0!important;
+width: 100%;
+background: white;
+display: none;
+z-index: 100;
+
+
+.hamburger-react {
+  position: relative;
+  left: 10px;
+}
+
+@media(max-width: 780px){
+  display: block;
+}
+
+`
+
+const Wrapper = styled.div`
+max-width: 1000px;
+margin: 40px auto 0;
+padding: 0 20px;
+display: flex;
+`
+
+const Content = styled.div`
+  padding: 0 20px;
+  width: 80%;
+
+  @media(max-width: 780px){
+    width: 90%;
+  }
+`
 
 export default App;
