@@ -16,6 +16,7 @@ import { store } from './app/store'
 import HomeFeed from './pages/HomeFeed'
 import Browse from './pages/Browse'
 import Saved from './pages/Saved'
+import Drink from './pages/Drink'
 
 //components
 import SideBar from './components/SideBar'
@@ -55,6 +56,7 @@ function App() {
             <Route path="/" element={<HomeFeed />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/saved" element={<Saved />} />
+            <Route path="/drinks/:id" element={<Drink />} />
           </Routes>
         </Content>
       </Wrapper>
