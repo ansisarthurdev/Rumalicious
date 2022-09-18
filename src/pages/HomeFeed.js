@@ -5,8 +5,8 @@ import styled from 'styled-components'
 import ItemSingle from '../components/ItemSingle'
 
 //redux
-import { useDispatch } from 'react-redux'
-import { updatePath } from '../app/appSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { updatePath, updateVodkaDrinks, updateGinDrinks, selectVodka, selectGin } from '../app/appSlice'
 
 //router
 import { Link } from 'react-router-dom'
@@ -15,8 +15,9 @@ const HomeFeed = () => {
 
   const dispatch = useDispatch();
   const [randomDrinks, setRandomDrinks] = useState([]);
-  const [vodkaDrinks, setVodkaDrinks] = useState([]);
-  const [ginDrinks, setGinDrinks] = useState([]);
+  const vodkaDrinks = useSelector(selectVodka);
+  const ginDrinks = useSelector(selectGin);
+
 
   const fetchDataRandom = () => {
     fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php')
@@ -31,7 +32,7 @@ const HomeFeed = () => {
     fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Vodka')
     .then((response) => response.json())
     .then(data => {
-     setVodkaDrinks(data?.drinks)
+      dispatch(updateVodkaDrinks(data?.drinks))
     })
   }
   
@@ -39,7 +40,7 @@ const HomeFeed = () => {
     fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Gin')
     .then((response) => response.json())
     .then(data => {
-      setGinDrinks(data?.drinks)
+      dispatch(updateGinDrinks(data?.drinks))
     })
   }
 
@@ -49,11 +50,15 @@ const HomeFeed = () => {
       fetchDataRandom();
     }
 
+    if(vodkaDrinks?.length === 0){
     //fetch vodka drinks
     fetchDataVodka();
+    }
 
+    if(ginDrinks?.length === 0){
     //fetch gin drinks
     fetchDataGin();
+    }
 
     //eslint-disable-next-line
   }, [])

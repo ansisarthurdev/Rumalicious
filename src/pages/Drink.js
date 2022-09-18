@@ -7,28 +7,86 @@ import { useParams, Link } from 'react-router-dom'
 //icons
 import { LeftArrowAlt } from '@styled-icons/boxicons-regular/LeftArrowAlt'
 import { Bookmark } from '@styled-icons/bootstrap/Bookmark'
+import { BookmarkFill } from '@styled-icons/bootstrap/BookmarkFill'
 
 const Drink = () => {
 
     const params = useParams();
     const [data, setData] = useState([]);
     const [ingredients, setIngredients] = useState([]);
+    const [measure, setMeasure] = useState([]);
+    const storage = window.localStorage;
+    const [liked, setLiked] = useState(false);
+ 
+    const checkIfLiked = () => {
+        const currentLikedDrinks = storage.getItem('likedDrinks');
+        const parsed = JSON.parse(currentLikedDrinks);
+        setLiked(parsed?.findIndex((like) => like?.idDrink === data?.idDrink) !== -1);
+    }
 
+    //add to liked drinks
+    const likeDrink = () => {
+        const currentLikedDrinks = storage.getItem('likedDrinks');
+        const parsed = JSON.parse(currentLikedDrinks);
+        let newArr = [];
 
+        
+        if(!liked){
+            //if drink is not on liked list yet - add
+        if(JSON.parse(currentLikedDrinks) !== null){
+            newArr = parsed;
+            newArr.unshift(data);
+            storage.setItem('likedDrinks', JSON.stringify(newArr));
+            //update like state
+            checkIfLiked();
+        } else {
+            newArr.push(data);
+            storage.setItem('likedDrinks', JSON.stringify(newArr));
+            //update like state
+            checkIfLiked();
+        }} else {
+            //if drink is already on liked list - remove
+            newArr = parsed;
+            const filtered = newArr?.filter((item) => item?.idDrink !== data?.idDrink);
+            storage.setItem('likedDrinks', JSON.stringify(filtered));
+            //update like state
+            checkIfLiked();
+        }
+        
+    }
+
+    useEffect(() => {
+        checkIfLiked();
+        //eslint-disable-next-line
+    }, [data])
     
     //get data
     useEffect(() => {
         fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${params.id}`)
         .then(response => response.json())
         .then(data => {
+            //remove null values
             let drink = Object.fromEntries(Object.entries(data.drinks[0]).filter(([_, v]) => v != null));
             setData(drink);
           })
     }, [params.id])
 
+    //filter ingredients & measure
+    useEffect(() => {
+        if(data?.length !== 0){
+            const drink = Object.entries(data);
+            const ingredientsArray = drink.filter(([key, value]) => key.startsWith('strIngredient')).map(([key, value]) => value)
+            const measureArray = drink.filter(([key, value]) => key.startsWith('strMeasure')).map(([key, value]) => value)
+            setIngredients(ingredientsArray);
+            setMeasure(measureArray);
+        }
+    }, [data])
+
   return (
     <Wrapper>
-        <Top><Link to='/'><LeftArrowAlt className ='icon' /> Go back</Link><Bookmark className='icon' /></Top>
+        <Top><Link to='/'><LeftArrowAlt className ='icon' /> Go back</Link>
+            {!liked ? <Bookmark className='icon bookmark' onClick={() => likeDrink()} /> : <BookmarkFill className='icon bookmark' onClick={() => likeDrink()} />}
+        </Top>
 
         <Information>
             <div className='left'>
@@ -38,8 +96,16 @@ const Drink = () => {
                 <h3>{data?.strDrink}</h3>
                 <p style={{color: 'gray', fontSize: '.8rem'}}>{data?.strAlcoholic} • {data?.strCategory}</p>
                 <p style={{color: 'gray', fontSize: '.8rem'}}>Served in: {data?.strGlass}</p>
-                <h4>Ingredients</h4>
-                <p style={{fontSize: '.6', color: 'gray'}}>Development process</p>
+
+                <h4>Ingredients & measure</h4>
+                <div className='ingredients-box'>
+                    <div className='ingredients'>
+                        {ingredients.map(ingredient => <p key={ingredient}>{ingredient}</p>)}
+                    </div>
+                    <div className='measure'>
+                        {measure.map(measure => <p key={measure}>{measure}</p>)}
+                    </div>
+                </div>
 
                 <h4>How to make it?</h4>
                 <p>{data?.strInstructions}</p>
@@ -60,10 +126,26 @@ margin: 20px 0 20px 0;
 }
 
 .right {
-h4 {
-    margin: 20px 0 10px 0;
-    padding: 0;
-}
+max-width: 480px;
+
+    @media(max-width: 850px){
+        width: 100%;
+        max-width: 650px;
+    }
+
+    h4 {
+        margin: 20px 0 10px 0;
+        padding: 0;
+    }
+
+    .ingredients-box {
+    display: flex;
+
+    .ingredients {
+    margin-right: 30px;
+    }
+    }
+
 }
 
 .left {
@@ -73,12 +155,24 @@ h4 {
     object-fit: cover;
     width: 100%;
     }
+
+    @media(max-width: 850px){
+        width: 100%;
+    }
 }
 `
 
 const Top = styled.div`
 display: flex;
 justify-content: space-between;
+
+.bookmark {
+    transition: .2s ease-out;
+
+    :hover {
+        transform: scale(1.2);
+    }
+}
 
 .icon {
     width: 24px;

@@ -127,11 +127,12 @@ display: flex;
 `
 
 const Content = styled.div`
-  padding: 0 20px;
+  padding: 0 0 0 20px;
   width: 80%;
 
   @media(max-width: 780px){
-    width: 90%;
+    width: 100%;
+    padding: 0;
   }
 `
 
