@@ -27,11 +27,13 @@ const Saved = () => {
   }, [dispatch])
 
   return (
-    <Wrapper>
+    <Wrapper style={{marginBottom: data?.length > 0 ? '20vh' : '60vh'}}>
       <h3>Your liked drinks</h3>
 
       <div className='item-list'>
-      {data?.map(drink => (
+      {data?.length === 0 && <p>The list is empty</p>}
+      {data === null && <p>The list is empty</p>}
+      {data?.length > 0 && data?.map(drink => (
           <ItemSingle 
             id={drink?.idDrink}
             name={drink?.strDrink}
