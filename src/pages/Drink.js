@@ -21,7 +21,12 @@ const Drink = () => {
     const checkIfLiked = () => {
         const currentLikedDrinks = storage.getItem('likedDrinks');
         const parsed = JSON.parse(currentLikedDrinks);
-        setLiked(parsed?.findIndex((like) => like?.idDrink === data?.idDrink) !== -1);
+
+        if(parsed === null){
+            setLiked(false)
+        } else {
+            setLiked(parsed?.findIndex((like) => like?.idDrink === data?.idDrink) !== -1);
+        }
     }
 
     //add to liked drinks
