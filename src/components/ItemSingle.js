@@ -30,6 +30,7 @@ a {
     :hover {
     img {
         transform: scale(1.3);
+        filter: grayscale(0%);
     }
     }
 
@@ -38,6 +39,7 @@ a {
         width: 100%;
         height: 150px;
         transition: .2s ease-out;
+        filter: grayscale(60%);
     }
 
     .item-information {
