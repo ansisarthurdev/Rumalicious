@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 
 //redux
 import { useDispatch, useSelector } from 'react-redux'
-import { updatePath, updateVodkaDrinks, updateGinDrinks, selectVodka, selectGin } from '../app/appSlice'
+import { updatePath, updateVodkaDrinks, updateGinDrinks, selectVodka, selectGin, updateWhiskeyDrinks, selectWhiskey } from '../app/appSlice'
 
 //router
 import { Link } from 'react-router-dom'
@@ -19,11 +19,15 @@ const HomeFeed = () => {
   const [randomDrinks, setRandomDrinks] = useState([]);
   const vodkaDrinks = useSelector(selectVodka);
   const ginDrinks = useSelector(selectGin);
+  const whiskeyDrinks = useSelector(selectWhiskey);
 
   //localstorage
   const storage = window.localStorage;
   const dataVodka = storage.getItem('dataVodka');
   const dataGin = storage.getItem('dataGin');
+  const dataWhiskey = storage.getItem('dataWhiskey');
+
+  const drinksCount = 40;
 
 
   const fetchDataRandom = () => {
@@ -53,6 +57,17 @@ const HomeFeed = () => {
     })
   }
 
+  const fetchDataWhiskey = () => {
+    fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Whiskey')
+    .then((response) => response.json())
+    .then(data => {
+      console.log(data);
+      storage.setItem('dataWhiskey', JSON.stringify(data));
+      dispatch(updateWhiskeyDrinks(data?.drinks))
+    })
+  }
+
+
   useEffect(() => {
     //get 10 random items
     for(let i = 0; i < 10; i++){
@@ -76,6 +91,16 @@ const HomeFeed = () => {
       } else {
         const data = JSON.parse(dataGin);
         dispatch(updateGinDrinks(data?.drinks));
+      } 
+    }
+
+    if(whiskeyDrinks?.length === 0){
+      //fetch whiskey drinks
+      if(!dataWhiskey){
+        fetchDataWhiskey();
+      } else {
+        const data = JSON.parse(dataWhiskey);
+        dispatch(updateWhiskeyDrinks(data?.drinks));
       }
       
     }
@@ -115,7 +140,7 @@ const HomeFeed = () => {
 
       <h3 style={{marginTop: 20}}>Top Cocktails - Vodka</h3>
       <div className='item-list'>
-        {vodkaDrinks.slice(0, 15)?.map(drink => (
+        {vodkaDrinks.slice(0, drinksCount)?.map(drink => (
           <ItemSingle 
             key={drink?.idDrink}
             id={drink?.idDrink}
@@ -128,7 +153,20 @@ const HomeFeed = () => {
 
       <h3 style={{marginTop: 50}}>Top Cocktails - Gin</h3>
       <div className='item-list' style={{marginBottom: 20}}>
-        {ginDrinks.slice(0, 15)?.map(drink => (
+        {ginDrinks.slice(0, drinksCount)?.map(drink => (
+          <ItemSingle 
+            key={drink?.idDrink}
+            id={drink?.idDrink}
+            name={drink?.strDrink}
+            alco={'Alcoholic'}
+            image={drink?.strDrinkThumb}
+        />
+        ))}
+      </div>
+
+      <h3 style={{marginTop: 50}}>Top Cocktails - Whiskey</h3>
+      <div className='item-list' style={{marginBottom: 20}}>
+        {whiskeyDrinks.slice(0, drinksCount)?.map(drink => (
           <ItemSingle 
             key={drink?.idDrink}
             id={drink?.idDrink}
