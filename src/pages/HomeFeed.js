@@ -4,7 +4,6 @@ import styled from 'styled-components'
 //components
 import ItemSingle from '../components/ItemSingle'
 import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
 
 //redux
 import { useDispatch, useSelector } from 'react-redux'

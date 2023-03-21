@@ -8,6 +8,9 @@ import { updatePath } from '../app/appSlice'
 //components
 import ItemSingle from '../components/ItemSingle'
 
+//icons
+import { InfoOutline as Info } from '@styled-icons/evaicons-outline/InfoOutline';
+
 
 const Browse = () => {
 
@@ -15,6 +18,9 @@ const Browse = () => {
   const [searchTxt, setSearchTxt] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [drinks, setDrinks] = useState([]);
+
+  const drinksCount = 30;
 
   const dispatch = useDispatch();
 
@@ -35,7 +41,13 @@ const Browse = () => {
           setLoading(true);
           fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${searchTxt}`)
           .then(result => result.json())
-          .then(data => setResults(data.ingredients))
+          .then(data => setResults(data.ingredients)).then(() => {
+            fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${searchTxt}`)
+            .then((response) => response.json())
+            .then(data => {
+              setDrinks(data?.drinks);
+            })
+          })
           .then(() => setLoading(false))
         }, 1000)
     
@@ -72,7 +84,10 @@ const Browse = () => {
 
       <ul>
         <li className='cocktail' onClick={() => {setActive('cocktail'); setResults([])}}>Cocktail by name</li>
-        <li className='ingredient' onClick={() => {setActive('ingredient'); setResults([])}}>Ingredient by name</li>
+        <li className='ingredient' onClick={() => {setActive('ingredient'); setResults([])}}>
+          Cocktail by ingredient name
+          <span>new</span>
+        </li>
       </ul>
 
       <div className='search'>
@@ -81,7 +96,13 @@ const Browse = () => {
         </div>
       </div>
 
+
       {results?.length > 0 && active === 'ingredient' &&
+      <>
+      <InfoWrapper>
+        <Info className='icon' />
+        <p>Scroll down to see what cocktails you can make with {searchTxt}</p>
+      </InfoWrapper>
       <div className='item-list-ingredients'>
         {results.slice(0, 20)?.map(item => (
           <div className='ingredients-list' style={{marginTop: 40, marginBottom: 40}}>
@@ -91,7 +112,21 @@ const Browse = () => {
             </div>
           </div>  
         ))}
-      </div>}
+      </div>
+
+      <h3 style={{marginBottom: 20}}>Browse drinks what you can make with {searchTxt}</h3>
+      <div className='drinks-list'>
+        {drinks?.slice(0, drinksCount)?.map(drink => (
+          <ItemSingle 
+            key={drink?.idDrink}
+            id={drink?.idDrink}
+            name={drink?.strDrink}
+            alco={'Alcoholic'}
+            image={drink?.strDrinkThumb}
+        />
+        ))}
+      </div>
+      </>}
 
       {results?.length > 0 && active === 'cocktail' &&
       <div className='item-list'>
@@ -109,7 +144,27 @@ const Browse = () => {
   )
 }
 
+const InfoWrapper = styled.div`
+width: 100%;
+display: flex;
+margin: 20px 0 0 0; 
+background-color: #1769aa;
+padding: 15px;
+color: white;
+
+.icon {
+  width: 24px;
+  margin-right: 10px;
+}
+`
+
 const Wrapper = styled.div`
+
+.drinks-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
 .item-list {
   display: flex;
@@ -144,9 +199,22 @@ ul {
     margin-right: 10px;
     font-size: .9rem;
     cursor: pointer;
+    position: relative;
 
     :hover {
       border-bottom: 2px solid black;
+    }
+
+    span {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      font-size: .5rem;
+      font-weight: bold;
+      color: #357a38;
+      padding: 1px 3px;
+      border: 1px solid #357a38;
+      border-radius: 5px;
     }
   }
 
