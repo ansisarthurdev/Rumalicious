@@ -4,7 +4,8 @@ const initialState = {
   path: null,
   vodkaDrinks: [],
   ginDrinks: [],
-  whiskeyDrinks: []
+  whiskeyDrinks: [],
+  darkToggle: false
 };
 
 
@@ -24,14 +25,18 @@ export const appSlice = createSlice({
     updateWhiskeyDrinks: (state, action) => {
       state.whiskeyDrinks = action.payload;
     },
+    toggleDark: (state, action) => {
+      state.darkToggle = action.payload;
+    },
   },
 });
 
-export const { updatePath, updateVodkaDrinks, updateGinDrinks, updateWhiskeyDrinks} = appSlice.actions;
+export const { updatePath, updateVodkaDrinks, updateGinDrinks, updateWhiskeyDrinks, toggleDark} = appSlice.actions;
 export const selectPath = (state) => state.app.path;
 export const selectVodka = (state) => state.app.vodkaDrinks;
 export const selectGin = (state) => state.app.ginDrinks;
 export const selectWhiskey = (state) => state.app.whiskeyDrinks;
+export const selectToggle = (state) => state.app.darkToggle;
 
 
 export default appSlice.reducer;

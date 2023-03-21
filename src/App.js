@@ -12,6 +12,7 @@ import {
 import { Provider } from 'react-redux'
 import { store } from './app/store'
 
+
 //pages
 import HomeFeed from './pages/HomeFeed'
 import Browse from './pages/Browse'

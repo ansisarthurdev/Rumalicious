@@ -145,7 +145,6 @@ const Browse = () => {
 }
 
 const InfoWrapper = styled.div`
-width: 100%;
 display: flex;
 margin: 20px 0 0 0; 
 background-color: #1769aa;

@@ -7,7 +7,7 @@ import Skeleton from '@mui/material/Skeleton';
 
 //redux
 import { useDispatch, useSelector } from 'react-redux'
-import { updatePath, updateVodkaDrinks, updateGinDrinks, selectVodka, selectGin, updateWhiskeyDrinks, selectWhiskey } from '../app/appSlice'
+import { updatePath, updateVodkaDrinks, updateGinDrinks, selectVodka, selectGin, updateWhiskeyDrinks, selectWhiskey, selectToggle } from '../app/appSlice'
 
 //router
 import { Link } from 'react-router-dom'
@@ -19,6 +19,7 @@ const HomeFeed = () => {
   const vodkaDrinks = useSelector(selectVodka);
   const ginDrinks = useSelector(selectGin);
   const whiskeyDrinks = useSelector(selectWhiskey);
+  const toggle = useSelector(selectToggle);
 
   //localstorage
   const storage = window.localStorage;
